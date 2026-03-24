@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { tenants, users } from '../../lib/api/mock-db';
+import loginInvestmentImage from '../../assets/login-investment.svg';
 import { LoginForm } from './components/LoginForm';
 
 const DEMO_TYPES = [
@@ -53,6 +54,7 @@ export function LoginPage() {
           <p style={{ color: 'var(--text-secondary)', maxWidth: 500 }}>
             Çok kiracılı mimari, rol bazlı yetkilendirme, data-dense dashboard ve raporlama altyapısı.
           </p>
+          <img className="login-hero-image" src={loginInvestmentImage} alt="Yatırım şirketi panel görseli" />
         </div>
 
         <div>
