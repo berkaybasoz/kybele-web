@@ -43,6 +43,15 @@ export class ApiError extends Error {
 const ACCESS_TTL_MINUTES = 15;
 const LOCK_MINUTES = 15;
 
+function encodeBase64Utf8(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary);
+}
+
 function toAuthUser(user: User, tenantSlug: string): AuthUser {
   return {
     id: user.id,
@@ -100,7 +109,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
   user.failedLoginCount = 0;
   user.lockedUntil = null;
 
-  const accessToken = btoa(
+  const accessToken = encodeBase64Utf8(
     JSON.stringify({
       sub: user.id,
       tenantId: user.tenantId,
@@ -112,7 +121,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
     }),
   );
 
-  const refreshToken = btoa(`${user.id}-${Date.now()}-${Math.random()}`);
+  const refreshToken = encodeBase64Utf8(`${user.id}-${Date.now()}-${Math.random()}`);
 
   return delay({
     accessToken,
@@ -128,7 +137,7 @@ export async function refresh(refreshToken: string): Promise<{ accessToken: stri
   }
 
   return delay({
-    accessToken: btoa(`refreshed-${Date.now()}`),
+    accessToken: encodeBase64Utf8(`refreshed-${Date.now()}`),
   });
 }
 

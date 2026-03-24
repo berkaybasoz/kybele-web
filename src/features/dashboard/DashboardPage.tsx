@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { MiniSparkline } from '../../components/charts/MiniSparkline';
 import { getAccounts } from '../../lib/api/accounts.api';
 import { getDailyExecutions } from '../../lib/api/reports.api';
 import { formatCurrency } from '../../lib/formatters/currency';
@@ -43,6 +44,34 @@ export function DashboardPage() {
     };
   }, [accountsQuery.data, executionsQuery.data]);
 
+  const sparklineSeries = useMemo(() => {
+    const rows = executionsQuery.data?.data ?? [];
+    if (rows.length < 2) {
+      return [];
+    }
+
+    const chronological = [...rows].sort(
+      (a, b) => new Date(a.executedAt).getTime() - new Date(b.executedAt).getTime(),
+    );
+
+    let cumulative = 0;
+    const cumulativeSeries = chronological.map((item) => {
+      cumulative += item.amount;
+      return cumulative;
+    });
+
+    const targetPoints = 40;
+    if (cumulativeSeries.length <= targetPoints) {
+      return cumulativeSeries;
+    }
+
+    const step = (cumulativeSeries.length - 1) / (targetPoints - 1);
+    return Array.from({ length: targetPoints }, (_, index) => {
+      const sourceIndex = Math.round(index * step);
+      return cumulativeSeries[sourceIndex];
+    });
+  }, [executionsQuery.data]);
+
   return (
     <>
       <section className="metric-grid">
@@ -70,7 +99,7 @@ export function DashboardPage() {
           <p style={{ color: 'var(--text-secondary)' }}>
             Günlük işlem hacmi: <strong>{formatCurrency(metrics.volume)}</strong>
           </p>
-          <div className="sparkline" style={{ height: 180 }} />
+          <MiniSparkline data={sparklineSeries} height={180} />
         </article>
 
         <article className="widget">

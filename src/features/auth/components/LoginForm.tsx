@@ -46,6 +46,7 @@ export function LoginForm({ initialTenantSlug, onTenantChange }: LoginFormProps)
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -136,8 +137,11 @@ export function LoginForm({ initialTenantSlug, onTenantChange }: LoginFormProps)
               flex: 1,
             }}
             onClick={() => {
-              const field = register('userType');
-              field.onChange({ target: { value, name: field.name } });
+              setValue('userType', value as FormValues['userType'], {
+                shouldDirty: true,
+                shouldTouch: true,
+                shouldValidate: true,
+              });
             }}
           >
             {label}
