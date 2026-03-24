@@ -1,21 +1,29 @@
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import {
+  ColDef,
+  IDatasource,
+  IGetRowsParams,
+  ICellRendererParams,
+} from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
 import { useMemo } from 'react';
-import { DataGrid } from '../../../components/data-grid/DataGrid';
 import { SideBadge } from '../../../components/data-grid/cell-renderers/SideBadge';
 import { Execution } from '../../../lib/api/mock-db';
 import { formatCurrency } from '../../../lib/formatters/currency';
 import { formatDate } from '../../../lib/formatters/date';
 import { formatNumber } from '../../../lib/formatters/number';
-import { DailyExecutionResponse } from '../../../lib/api/reports.api';
+import {
+  DailyExecutionAggregates,
+  DailyExecutionFilter,
+  getDailyExecutions,
+} from '../../../lib/api/reports.api';
 
 type Props = {
-  response?: DailyExecutionResponse;
+  filter: DailyExecutionFilter;
+  aggregates?: DailyExecutionAggregates;
   loading?: boolean;
 };
 
-export function ExecutionsGrid({ response, loading }: Props) {
-  const rowData = response?.data ?? [];
-
+export function ExecutionsGrid({ filter, aggregates, loading }: Props) {
   const columnDefs = useMemo<ColDef<Execution>[]>(
     () => [
       { field: 'executionNo', headerName: 'Gerçekleşme No', width: 160, pinned: 'left' },
@@ -81,25 +89,56 @@ export function ExecutionsGrid({ response, loading }: Props) {
     [],
   );
 
-  const pinnedBottomRowData = response
+  const pinnedBottomRowData = aggregates
     ? [
         {
           executionNo: 'TOPLAM',
-          amount: response.aggregates.totalAmount,
-          commission: response.aggregates.totalCommission,
-          tax: response.aggregates.totalTax,
-          netAmount: response.aggregates.netTotal,
+          amount: aggregates.totalAmount,
+          commission: aggregates.totalCommission,
+          tax: aggregates.totalTax,
+          netAmount: aggregates.netTotal,
         } as unknown as Execution,
       ]
     : undefined;
 
+  const datasource = useMemo<IDatasource>(
+    () => ({
+      getRows: async (params: IGetRowsParams) => {
+        try {
+          const response = await getDailyExecutions(filter, {
+            startRow: params.startRow,
+            endRow: params.endRow,
+          });
+
+          params.successCallback(response.data, response.total);
+        } catch {
+          params.failCallback();
+        }
+      },
+    }),
+    [filter],
+  );
+
   return (
-    <DataGrid
-      rowData={rowData}
-      columnDefs={columnDefs}
-      loading={loading}
-      height={600}
-      pinnedBottomRowData={pinnedBottomRowData}
-    />
+    <div className="ag-theme-quartz ag-theme-custom-dark" style={{ height: 600, width: '100%' }}>
+      <AgGridReact<Execution>
+        theme="legacy"
+        rowModelType="infinite"
+        datasource={datasource}
+        cacheBlockSize={200}
+        infiniteInitialRowCount={200}
+        maxBlocksInCache={15}
+        columnDefs={columnDefs}
+        defaultColDef={{
+          sortable: true,
+          filter: true,
+          resizable: true,
+        }}
+        rowHeight={36}
+        headerHeight={36}
+        loading={loading}
+        pinnedBottomRowData={pinnedBottomRowData}
+      />
+    </div>
   );
 }

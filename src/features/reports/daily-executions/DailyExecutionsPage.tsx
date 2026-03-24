@@ -7,7 +7,7 @@ import { DailyExecutionFilter } from '../../../lib/api/reports.api';
 import { formatCurrency } from '../../../lib/formatters/currency';
 import { ExecutionFilters } from './ExecutionFilters';
 import { ExecutionsGrid } from './ExecutionsGrid';
-import { useExecutions } from './hooks/useExecutions';
+import { useExecutionsMeta } from './hooks/useExecutions';
 
 export function DailyExecutionsPage() {
   const tenant = useTenant();
@@ -27,10 +27,15 @@ export function DailyExecutionsPage() {
     return () => clearTimeout(timer);
   }, [filters]);
 
-  const query = useExecutions({
-    tenantId: tenant?.id ?? '',
-    ...debounced,
-  });
+  const reportFilter = useMemo(
+    () => ({
+      tenantId: tenant?.id ?? '',
+      ...debounced,
+    }),
+    [debounced, tenant?.id],
+  );
+
+  const query = useExecutionsMeta(reportFilter);
 
   const summary = useMemo(() => {
     if (!query.data) {
@@ -50,7 +55,7 @@ export function DailyExecutionsPage() {
       <GridToolbar
         left={
           <>
-            <span className="badge info">Kayıt: {summary.total}</span>
+            <span className="badge info">Kayıt: {summary.total.toLocaleString('tr-TR')}</span>
             <span className="badge success">Net: {formatCurrency(summary.net)}</span>
           </>
         }
@@ -63,7 +68,7 @@ export function DailyExecutionsPage() {
         }
       />
 
-      <ExecutionsGrid response={query.data} loading={query.isFetching} />
+      <ExecutionsGrid filter={reportFilter} aggregates={query.data?.aggregates} loading={query.isFetching} />
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { DailyExecutionFilter, getDailyExecutions } from '../../../../lib/api/reports.api';
+import { DailyExecutionFilter, getDailyExecutionsMeta } from '../../../../lib/api/reports.api';
 
-export function useExecutions(filter: DailyExecutionFilter) {
+export function useExecutionsMeta(filter: DailyExecutionFilter) {
   return useQuery({
-    queryKey: ['daily-executions', filter],
-    queryFn: () => getDailyExecutions(filter),
+    queryKey: ['daily-executions-meta', filter],
+    enabled: Boolean(filter.tenantId),
+    queryFn: () => getDailyExecutionsMeta(filter),
   });
 }

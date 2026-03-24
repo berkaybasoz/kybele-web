@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { MiniSparkline } from '../../components/charts/MiniSparkline';
 import { getAccounts } from '../../lib/api/accounts.api';
-import { getDailyExecutions } from '../../lib/api/reports.api';
+import { getDailyExecutions, getDailyExecutionsMeta } from '../../lib/api/reports.api';
 import { formatCurrency } from '../../lib/formatters/currency';
 import { useTenant } from '../../hooks/useTenant';
 
@@ -15,15 +15,29 @@ export function DashboardPage() {
     queryFn: () => getAccounts({ tenantId: tenant!.id }),
   });
 
-  const executionsQuery = useQuery({
+  const dailyFilter = useMemo(
+    () => ({
+      tenantId: tenant?.id ?? '',
+      date: new Date().toISOString().slice(0, 10),
+      side: 'ALL' as const,
+      assetType: 'ALL' as const,
+    }),
+    [tenant?.id],
+  );
+
+  const executionsMetaQuery = useQuery({
     queryKey: ['dashboard-executions', tenant?.id],
     enabled: Boolean(tenant?.id),
+    queryFn: () => getDailyExecutionsMeta(dailyFilter),
+  });
+
+  const executionsSliceQuery = useQuery({
+    queryKey: ['dashboard-executions-slice', tenant?.id],
+    enabled: Boolean(tenant?.id),
     queryFn: () =>
-      getDailyExecutions({
-        tenantId: tenant!.id,
-        date: new Date().toISOString().slice(0, 10),
-        side: 'ALL',
-        assetType: 'ALL',
+      getDailyExecutions(dailyFilter, {
+        startRow: 0,
+        endRow: 1200,
       }),
   });
 
@@ -39,13 +53,13 @@ export function DashboardPage() {
       cash,
       available,
       blocked,
-      dailyExecutions: executionsQuery.data?.total ?? 0,
-      volume: executionsQuery.data?.aggregates.totalAmount ?? 0,
+      dailyExecutions: executionsMetaQuery.data?.total ?? 0,
+      volume: executionsMetaQuery.data?.aggregates.totalAmount ?? 0,
     };
-  }, [accountsQuery.data, executionsQuery.data]);
+  }, [accountsQuery.data, executionsMetaQuery.data]);
 
   const sparklineSeries = useMemo(() => {
-    const rows = executionsQuery.data?.data ?? [];
+    const rows = executionsSliceQuery.data?.data ?? [];
     if (rows.length < 2) {
       return [];
     }
@@ -66,11 +80,20 @@ export function DashboardPage() {
     }
 
     const step = (cumulativeSeries.length - 1) / (targetPoints - 1);
-    return Array.from({ length: targetPoints }, (_, index) => {
+    const sampled = Array.from({ length: targetPoints }, (_, index) => {
       const sourceIndex = Math.round(index * step);
       return cumulativeSeries[sourceIndex];
     });
-  }, [executionsQuery.data]);
+
+    const volume = executionsMetaQuery.data?.aggregates.totalAmount ?? 0;
+    const lastValue = sampled[sampled.length - 1] ?? 0;
+    if (volume <= 0 || lastValue <= 0) {
+      return sampled;
+    }
+
+    const scale = volume / lastValue;
+    return sampled.map((value) => value * scale);
+  }, [executionsMetaQuery.data?.aggregates.totalAmount, executionsSliceQuery.data]);
 
   return (
     <>
