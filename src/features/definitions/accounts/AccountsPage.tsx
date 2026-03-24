@@ -54,7 +54,7 @@ export function AccountsPage() {
           }
 
           return (
-            <button className="btn" onClick={() => navigate(`/definitions/accounts/${row.id}`)}>
+            <button className="btn compact" onClick={() => navigate(`/definitions/accounts/${row.id}`)}>
               {row.accountNo}
             </button>
           );
@@ -80,7 +80,7 @@ export function AccountsPage() {
         width: 120,
         cellRenderer: (params: ICellRendererParams<Account, Account['status']>) => {
           const value = params.value ?? 'PASSIVE';
-          return <StatusBadge label={statusMap[value].label} variant={statusMap[value].variant} />;
+          return <StatusBadge label={statusMap[value].label} variant={statusMap[value].variant} compact />;
         },
       },
     ],

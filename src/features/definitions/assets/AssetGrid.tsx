@@ -25,9 +25,9 @@ export function AssetGrid({ rowData, loading, onEdit, onDelete }: Props) {
         width: 100,
         cellRenderer: (params: ICellRendererParams<Asset, boolean>) =>
           params.value ? (
-            <StatusBadge label="Aktif" variant="success" />
+            <StatusBadge label="Aktif" variant="success" compact />
           ) : (
-            <StatusBadge label="Pasif" variant="neutral" />
+            <StatusBadge label="Pasif" variant="neutral" compact />
           ),
       },
       {
@@ -42,11 +42,11 @@ export function AssetGrid({ rowData, loading, onEdit, onDelete }: Props) {
           }
 
           return (
-            <div className="actions">
-              <button className="btn" onClick={() => onEdit(row)}>
+            <div className="grid-actions">
+              <button className="btn compact" onClick={() => onEdit(row)}>
                 Düzenle
               </button>
-              <button className="btn danger" onClick={() => onDelete(row)}>
+              <button className="btn danger compact" onClick={() => onDelete(row)}>
                 Sil
               </button>
             </div>

@@ -6,6 +6,7 @@ type DataGridProps<T extends object> = {
   columnDefs: ColDef<T>[];
   loading?: boolean;
   height?: number;
+  rowHeight?: number;
   pinnedBottomRowData?: T[];
 };
 
@@ -14,6 +15,7 @@ export function DataGrid<T extends object>({
   columnDefs,
   loading,
   height = 520,
+  rowHeight = 36,
   pinnedBottomRowData,
 }: DataGridProps<T>) {
   return (
@@ -28,7 +30,7 @@ export function DataGrid<T extends object>({
           resizable: true,
         }}
         animateRows
-        rowHeight={32}
+        rowHeight={rowHeight}
         headerHeight={36}
         loading={loading}
         pinnedBottomRowData={pinnedBottomRowData}
