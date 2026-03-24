@@ -83,10 +83,6 @@ function buildFilterKey(filter: DailyExecutionFilter): string {
   ].join('|');
 }
 
-function tenantByIndex(index: number): string {
-  return index % 3 === 0 ? 't-isyatirim' : 't-isbankasi';
-}
-
 function sideByIndex(index: number): OrderSide {
   return index % 2 === 0 ? 'BUY' : 'SELL';
 }
@@ -150,11 +146,6 @@ function amountByIndex(index: number): {
 }
 
 function matchesFilter(index: number, filter: DailyExecutionFilter): boolean {
-  const tenantId = tenantByIndex(index);
-  if (tenantId !== filter.tenantId) {
-    return false;
-  }
-
   const side = sideByIndex(index);
   if (filter.side && filter.side !== 'ALL' && side !== filter.side) {
     return false;
@@ -170,7 +161,7 @@ function matchesFilter(index: number, filter: DailyExecutionFilter): boolean {
     return false;
   }
 
-  const accountNo = accountNoByIndex(index, tenantId);
+  const accountNo = accountNoByIndex(index, filter.tenantId);
   if (filter.accountNo && !accountNo.includes(filter.accountNo)) {
     return false;
   }
@@ -178,8 +169,7 @@ function matchesFilter(index: number, filter: DailyExecutionFilter): boolean {
   return true;
 }
 
-function buildExecution(index: number, date: string): Execution {
-  const tenantId = tenantByIndex(index);
+function buildExecution(index: number, date: string, tenantId: string): Execution {
   const side = sideByIndex(index);
   const accountNo = accountNoByIndex(index, tenantId);
   const customerName = customerNameByIndex(index, tenantId);
@@ -276,7 +266,7 @@ export async function getDailyExecutions(
 
   const rows = record.matchingIndices
     .slice(start, end)
-    .map((index) => buildExecution(index, filter.date));
+    .map((index) => buildExecution(index, filter.date, filter.tenantId));
 
   return delay({
     data: rows,

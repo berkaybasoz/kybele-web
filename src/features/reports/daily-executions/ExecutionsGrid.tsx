@@ -12,18 +12,16 @@ import { formatCurrency } from '../../../lib/formatters/currency';
 import { formatDate } from '../../../lib/formatters/date';
 import { formatNumber } from '../../../lib/formatters/number';
 import {
-  DailyExecutionAggregates,
   DailyExecutionFilter,
   getDailyExecutions,
 } from '../../../lib/api/reports.api';
 
 type Props = {
   filter: DailyExecutionFilter;
-  aggregates?: DailyExecutionAggregates;
   loading?: boolean;
 };
 
-export function ExecutionsGrid({ filter, aggregates, loading }: Props) {
+export function ExecutionsGrid({ filter, loading }: Props) {
   const columnDefs = useMemo<ColDef<Execution>[]>(
     () => [
       { field: 'executionNo', headerName: 'Gerçekleşme No', width: 160, pinned: 'left' },
@@ -42,9 +40,12 @@ export function ExecutionsGrid({ filter, aggregates, loading }: Props) {
         field: 'side',
         headerName: 'A/S',
         width: 70,
-        cellRenderer: (params: ICellRendererParams<Execution, Execution['side']>) => (
-          <SideBadge side={params.value ?? 'BUY'} />
-        ),
+        cellRenderer: (params: ICellRendererParams<Execution, Execution['side']>) => {
+          if (params.node?.rowPinned) {
+            return null;
+          }
+          return <SideBadge side={params.value ?? 'BUY'} />;
+        },
       },
       {
         field: 'quantity',
@@ -89,18 +90,6 @@ export function ExecutionsGrid({ filter, aggregates, loading }: Props) {
     [],
   );
 
-  const pinnedBottomRowData = aggregates
-    ? [
-        {
-          executionNo: 'TOPLAM',
-          amount: aggregates.totalAmount,
-          commission: aggregates.totalCommission,
-          tax: aggregates.totalTax,
-          netAmount: aggregates.netTotal,
-        } as unknown as Execution,
-      ]
-    : undefined;
-
   const datasource = useMemo<IDatasource>(
     () => ({
       getRows: async (params: IGetRowsParams) => {
@@ -137,7 +126,6 @@ export function ExecutionsGrid({ filter, aggregates, loading }: Props) {
         rowHeight={36}
         headerHeight={36}
         loading={loading}
-        pinnedBottomRowData={pinnedBottomRowData}
       />
     </div>
   );

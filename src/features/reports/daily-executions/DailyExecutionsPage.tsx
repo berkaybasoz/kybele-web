@@ -68,7 +68,7 @@ export function DailyExecutionsPage() {
         }
       />
 
-      <ExecutionsGrid filter={reportFilter} aggregates={query.data?.aggregates} loading={query.isFetching} />
+      <ExecutionsGrid filter={reportFilter} loading={query.isFetching} />
     </div>
   );
 }
