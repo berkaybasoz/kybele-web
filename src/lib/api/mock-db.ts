@@ -132,6 +132,8 @@ const traderPermissions = [
   'REPORT_DAILY_EXEC_VIEW',
   'REPORT_EXPORT',
   'ASSET_VIEW',
+  'ASSET_EDIT',
+  'ASSET_DELETE',
   'ACCOUNT_VIEW',
   'SETTINGS_VIEW',
 ];

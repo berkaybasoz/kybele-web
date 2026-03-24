@@ -7,11 +7,13 @@ import { Asset } from '../../../lib/api/mock-db';
 type Props = {
   rowData: Asset[];
   loading?: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
   onEdit: (asset: Asset) => void;
   onDelete: (asset: Asset) => void;
 };
 
-export function AssetGrid({ rowData, loading, onEdit, onDelete }: Props) {
+export function AssetGrid({ rowData, loading, canEdit, canDelete, onEdit, onDelete }: Props) {
   const columnDefs = useMemo<ColDef<Asset>[]>(
     () => [
       { field: 'code', headerName: 'Kod', width: 120 },
@@ -43,10 +45,10 @@ export function AssetGrid({ rowData, loading, onEdit, onDelete }: Props) {
 
           return (
             <div className="grid-actions">
-              <button className="btn compact" onClick={() => onEdit(row)}>
+              <button className="btn compact" disabled={!canEdit} onClick={() => onEdit(row)}>
                 Düzenle
               </button>
-              <button className="btn danger compact" onClick={() => onDelete(row)}>
+              <button className="btn danger compact" disabled={!canDelete} onClick={() => onDelete(row)}>
                 Sil
               </button>
             </div>
@@ -54,7 +56,7 @@ export function AssetGrid({ rowData, loading, onEdit, onDelete }: Props) {
         },
       },
     ],
-    [onDelete, onEdit],
+    [canDelete, canEdit, onDelete, onEdit],
   );
 
   return <DataGrid rowData={rowData} columnDefs={columnDefs} loading={loading} height={560} />;

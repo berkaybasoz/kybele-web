@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { GridToolbar } from '../../../components/data-grid/toolbar/GridToolbar';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { Input } from '../../../components/ui/Input';
@@ -92,8 +93,11 @@ export function AssetsPage() {
       <AssetGrid
         rowData={rows}
         loading={assetsQuery.isLoading}
+        canEdit={canEdit}
+        canDelete={canDelete}
         onEdit={(asset) => {
           if (!canEdit) {
+            toast.error('Kıymet düzenleme yetkiniz yok.');
             return;
           }
           setEditing(asset);
@@ -101,6 +105,7 @@ export function AssetsPage() {
         }}
         onDelete={(asset) => {
           if (!canDelete) {
+            toast.error('Kıymet silme yetkiniz yok.');
             return;
           }
           setDeleteTarget(asset);
