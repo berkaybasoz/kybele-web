@@ -17,8 +17,9 @@ export function DataGrid<T extends object>({
   pinnedBottomRowData,
 }: DataGridProps<T>) {
   return (
-    <div className="ag-theme-custom-dark" style={{ height, width: '100%' }}>
+    <div className="ag-theme-quartz ag-theme-custom-dark" style={{ height, width: '100%' }}>
       <AgGridReact<T>
+        theme="legacy"
         rowData={rowData}
         columnDefs={columnDefs}
         defaultColDef={{

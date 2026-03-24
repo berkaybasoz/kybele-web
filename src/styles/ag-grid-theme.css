@@ -1,18 +1,56 @@
 .ag-theme-custom-dark {
   --ag-background-color: var(--bg-secondary);
   --ag-foreground-color: var(--text-primary);
+  --ag-secondary-foreground-color: var(--text-secondary);
+  --ag-wrapper-border-color: var(--border);
   --ag-header-background-color: var(--bg-tertiary);
-  --ag-header-foreground-color: var(--text-secondary);
+  --ag-header-foreground-color: var(--text-primary);
+  --ag-header-text-color: var(--text-primary);
   --ag-border-color: var(--border);
+  --ag-row-border-color: color-mix(in srgb, var(--border) 65%, transparent);
   --ag-row-hover-color: var(--grid-row-hover);
   --ag-selected-row-background-color: var(--grid-row-selected);
   --ag-odd-row-background-color: var(--grid-row-odd);
   --ag-even-row-background-color: var(--grid-row-even);
+  --ag-modal-overlay-background-color: rgba(13, 17, 23, 0.72);
+  --ag-menu-background-color: var(--bg-tertiary);
+  --ag-panel-background-color: var(--bg-secondary);
+  --ag-control-panel-background-color: var(--bg-secondary);
+  --ag-input-background-color: var(--bg-primary);
+  --ag-input-border-color: var(--border);
+  --ag-popup-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   --ag-font-family: 'IBM Plex Sans', sans-serif;
   --ag-cell-horizontal-padding: 10px;
   --ag-grid-size: 6px;
 }
 
+.ag-theme-custom-dark .ag-root-wrapper,
+.ag-theme-custom-dark .ag-root,
+.ag-theme-custom-dark .ag-body-viewport,
+.ag-theme-custom-dark .ag-center-cols-viewport,
+.ag-theme-custom-dark .ag-pinned-left-cols-viewport,
+.ag-theme-custom-dark .ag-pinned-right-cols-viewport {
+  background-color: var(--bg-secondary);
+}
+
+.ag-theme-custom-dark .ag-header,
+.ag-theme-custom-dark .ag-floating-top,
+.ag-theme-custom-dark .ag-floating-bottom {
+  background-color: var(--bg-tertiary);
+}
+
 .ag-theme-custom-dark .ag-header-cell-label {
   font-weight: 600;
+}
+
+.ag-theme-custom-dark .ag-header-cell,
+.ag-theme-custom-dark .ag-header-group-cell,
+.ag-theme-custom-dark .ag-header-cell-text {
+  color: var(--text-primary) !important;
+}
+
+.ag-theme-custom-dark .ag-header-cell .ag-icon,
+.ag-theme-custom-dark .ag-header-cell-menu-button,
+.ag-theme-custom-dark .ag-header-cell-filter-button {
+  color: var(--text-secondary);
 }
