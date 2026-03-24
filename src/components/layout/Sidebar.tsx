@@ -55,9 +55,29 @@ export function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div style={{ marginBottom: 18 }}>
-        <div style={{ fontSize: 20, fontWeight: 700 }}>KYBELE</div>
-        {!collapsed && <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Backoffice</div>}
+      <div style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'color-mix(in srgb, var(--tenant-primary) 25%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--tenant-primary) 55%, black 12%)',
+            fontWeight: 800,
+            fontSize: 13,
+          }}
+        >
+          K
+        </div>
+        {!collapsed && (
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700, lineHeight: 1 }}>KYBELE</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>Backoffice</div>
+          </div>
+        )}
       </div>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
