@@ -1,0 +1,18 @@
+.ag-theme-custom-dark {
+  --ag-background-color: var(--bg-secondary);
+  --ag-foreground-color: var(--text-primary);
+  --ag-header-background-color: var(--bg-tertiary);
+  --ag-header-foreground-color: var(--text-secondary);
+  --ag-border-color: var(--border);
+  --ag-row-hover-color: var(--grid-row-hover);
+  --ag-selected-row-background-color: var(--grid-row-selected);
+  --ag-odd-row-background-color: var(--grid-row-odd);
+  --ag-even-row-background-color: var(--grid-row-even);
+  --ag-font-family: 'IBM Plex Sans', sans-serif;
+  --ag-cell-horizontal-padding: 10px;
+  --ag-grid-size: 6px;
+}
+
+.ag-theme-custom-dark .ag-header-cell-label {
+  font-weight: 600;
+}

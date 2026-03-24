@@ -1,0 +1,37 @@
+import { ColDef } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+
+type DataGridProps<T extends object> = {
+  rowData: T[];
+  columnDefs: ColDef<T>[];
+  loading?: boolean;
+  height?: number;
+  pinnedBottomRowData?: T[];
+};
+
+export function DataGrid<T extends object>({
+  rowData,
+  columnDefs,
+  loading,
+  height = 520,
+  pinnedBottomRowData,
+}: DataGridProps<T>) {
+  return (
+    <div className="ag-theme-custom-dark" style={{ height, width: '100%' }}>
+      <AgGridReact<T>
+        rowData={rowData}
+        columnDefs={columnDefs}
+        defaultColDef={{
+          sortable: true,
+          filter: true,
+          resizable: true,
+        }}
+        animateRows
+        rowHeight={32}
+        headerHeight={36}
+        loading={loading}
+        pinnedBottomRowData={pinnedBottomRowData}
+      />
+    </div>
+  );
+}
