@@ -58,14 +58,8 @@ export function LoginPage() {
         </div>
 
         <div>
-          <div className="sparkline" />
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
-            TradingView esintili görünüm, gerçek zamanlı piyasa verisi altyapısına hazır.
-          </p>
-
           <div
             style={{
-              marginTop: 16,
               border: '1px solid var(--border)',
               background: 'rgba(13, 17, 23, 0.9)',
               borderRadius: 10,
