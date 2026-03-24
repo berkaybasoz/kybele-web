@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
@@ -30,22 +30,17 @@ function formatCountdown(seconds: number) {
   return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
 
-export function LoginForm() {
-  const [searchParams] = useSearchParams();
+type LoginFormProps = {
+  initialTenantSlug: string;
+  onTenantChange: (tenantSlug: string) => void;
+};
+
+export function LoginForm({ initialTenantSlug, onTenantChange }: LoginFormProps) {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [lockedRemaining, setLockedRemaining] = useState<number>(0);
   const [showPassword, setShowPassword] = useState(false);
-
-  const defaultTenant = useMemo(() => {
-    const fromQuery = searchParams.get('tenant');
-    if (fromQuery && tenants.some((tenant) => tenant.slug === fromQuery)) {
-      return fromQuery;
-    }
-
-    return tenants[0]?.slug ?? '';
-  }, [searchParams]);
 
   const {
     register,
@@ -55,7 +50,7 @@ export function LoginForm() {
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      tenantSlug: defaultTenant,
+      tenantSlug: initialTenantSlug,
       userType: 'TRADER',
       customerNo: '',
       password: '',
@@ -75,7 +70,14 @@ export function LoginForm() {
     return () => clearInterval(timer);
   }, [lockedRemaining]);
 
-  const selectedTenant = tenants.find((tenant) => tenant.slug === watch('tenantSlug'));
+  const tenantSlug = watch('tenantSlug');
+  const selectedTenant = tenants.find((tenant) => tenant.slug === tenantSlug);
+
+  useEffect(() => {
+    if (tenantSlug) {
+      onTenantChange(tenantSlug);
+    }
+  }, [tenantSlug, onTenantChange]);
 
   const onSubmit = handleSubmit(async (values) => {
     setError(null);
@@ -198,10 +200,6 @@ export function LoginForm() {
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-secondary)' }}>
         <a href="#">Şifremi unuttum</a>
         <span>v0.1.0</span>
-      </div>
-
-      <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-        Demo: `900001 / Password123!` (BO_ADMIN), `300021 / Password123!` (TRADER)
       </div>
     </form>
   );
